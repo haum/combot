@@ -25,7 +25,7 @@
 
 use Combot;
 
-my $bot = GitHookBot->new(
+my $bot = Combot->new(
 	server => "irc.freenode.org",
 	port => 7000,
 	ssl => 1,
