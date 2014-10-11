@@ -9,6 +9,9 @@ my $bot = Combot->new(
 	redis_db => 3,
 	redis_pref => "combot:",
 	master => "matael",
-	agenda_db => "/home/haum/website/agenda.sqlite"
+	agenda_db => "/home/haum/agenda.sqlite",
+	# GH
+	user => 'haum',
+	repo => 'haum_internal',
 )->run();
 
