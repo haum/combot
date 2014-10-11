@@ -42,7 +42,7 @@ sub said {
 				body =>  Encode::decode_utf8("Mise à jour du site en cours...")
 			);
 
-			my $back = `cd /home/haum/website && git co upstream && git pull && echo "OK"`;
+			my $back = `cd /home/haum/website && git co upstream && git pull && source .venv_pelican/bin/activate && make publish && deactivate && echo "OK"`;
 
 			split( /\n/ , $back);
 			my $message;
