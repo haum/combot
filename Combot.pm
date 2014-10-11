@@ -135,12 +135,7 @@ sub said {
 			my $operation; # kind of database operation
 			my $sth;
 			if ($1 eq "add") {
-				$self->say(
-					who => $msg->{who},
-					channel => $msg->{channel},
-					body => Encode::decode_utf8('Pour ajouter un élément, : !agenda add JJ/MM/YYYY "Lieu" "Titre" Description')
-				) if (!defined $2);
-				if ($2 =~ /(\d{1,2}\/\d{2}\/\d{4}\s\d{1,2}:\d{2})\s"([^"]+)"\s"([^"]+)"(.+)$/) {
+				if (defined $2 and $2 =~ /(\d{1,2}\/\d{2}\/\d{4}\s\d{1,2}:\d{2})\s"([^"]+)"\s"([^"]+)"(.+)$/) {
 					$sth = $dbh->prepare("insert into agenda (titre,lieu,description,date,status) values (?,?,?,?,1)");
 					$sth->execute($3, $2, $4, $1);
 					$operation = "l'insertion";
@@ -152,7 +147,7 @@ sub said {
 					);
 				}
 			} elsif ($1 eq "modify") {
-				if ($2 =~ /(\d+)\s(titre|lieu|date|status)\s(.+)$/) {
+				if (defined $2 and $2 =~ /(\d+)\s(titre|lieu|date|status)\s(.+)$/) {
 					$sth = $dbh->prepare("update agenda set ".$2."=? where rowid=?");
 					$sth->execute($3, $1);
 					$operation = "la modification";
@@ -165,7 +160,7 @@ sub said {
 					undef $operation;
 				}
 			} elsif ($1 eq "remove") {
-				if ($2 =~ /(\d+)\s*$/) {
+				if (defined $2 and $2 =~ /(\d+)\s*$/) {
 					$sth = $dbh->prepare("update agenda set status=0 where rowid=?");
 					$sth->execute($1);
 					$operation = "la suppression";
