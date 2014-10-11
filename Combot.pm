@@ -10,6 +10,7 @@ use Redis; 			# for authorizations
 use Bot::BasicBot;
 
 use base qw( Bot::BasicBot );
+use Unicode::MapUTF8;
 
 sub init {
 	my ($self) = @_;
@@ -38,7 +39,7 @@ sub said {
 			$self->say(
 				who => $msg->{who},
 				channel => $msg->{channel},
-				body => "Mise à jour du site en cours..."
+				body =>  Encode::decode_utf8("Mise à jour du site en cours...")
 			);
 
 			my $back = `cd /home/haum/website && git co upstream && git pull && echo "OK"`;
@@ -54,13 +55,13 @@ sub said {
 			$self->say(
 				who => $msg->{who},
 				channel => $msg->{channel},
-				body => $message
+				body => Encode::decode_utf8($message)
 			);
 		} else {
 		  $self->say(
 			who => $msg->{who},
 			channel => $msg->{channel},
-			body => "On se connait ?"
+			body => Encode::decode_utf8("On se connait ?")
 		  );
 		  return;
 		}
@@ -95,7 +96,7 @@ sub said {
 			my $body = $issue->{number}.'# '.$issue->{title}.' ['.join('][', @labels).']';
 			$self->say({
 				channel => $msg->{channel},
-				body => $body,
+				body => Encode::decode_utf8($body),
 			})
 		}
 	}
@@ -111,7 +112,7 @@ sub said {
 		my $dbh = DBI->connect("dbi:SQLite:dbname=".$self->{agenda_db}) or 	$self->say(
 				who => $msg->{who},
 				channel => $msg->{channel},
-				body => "Impossible de se connecter à la db ".$self->{agenda_db}
+				body => Encode::decode_utf8("Impossible de se connecter à la db ".$self->{agenda_db})
 			);
 
 		if (!defined $1) {
@@ -125,7 +126,7 @@ sub said {
 				$self->say(
 					who => $msg->{who},
 					channel => $msg->{channel},
-					body => "#".$e->[0].": ".$e->[1]." ; ".$e->[2]." le ".$e->[4]
+					body => Encode::decode_utf8("#".$e->[0].": ".$e->[1]." ; ".$e->[2]." le ".$e->[4])
 				);
 				$counter++;
 				last if ($counter >= 5);
@@ -137,7 +138,7 @@ sub said {
 				$self->say(
 					who => $msg->{who},
 					channel => $msg->{channel},
-					body => 'Pour ajouter un élément, : !agenda add JJ/MM/YYYY "Lieu" "Titre" Description'
+					body => Encode::decode_utf8('Pour ajouter un élément, : !agenda add JJ/MM/YYYY "Lieu" "Titre" Description')
 				) if (!defined $2);
 				if ($2 =~ /(\d{1,2}\/\d{2}\/\d{4}\s\d{1,2}:\d{2})\s"([^"]+)"\s"([^"]+)"(.+)$/) {
 					$sth = $dbh->prepare("insert into agenda (titre,lieu,description,date,status) values (?,?,?,?,1)");
@@ -147,7 +148,7 @@ sub said {
 					$self->say(
 						who => $msg->{who},
 						channel => $msg->{channel},
-						body => 'Pour ajouter un élément, : !agenda add JJ/MM/YYYY "Lieu" "Titre" Description'
+						body => Encode::decode_utf8('Pour ajouter un élément, : !agenda add JJ/MM/YYYY "Lieu" "Titre" Description')
 					);
 				}
 			} elsif ($1 eq "modify") {
@@ -159,7 +160,7 @@ sub said {
 					$self->say(
 						who => $msg->{who},
 						channel => $msg->{channel},
-						body => "Pour modifier un élément, : !agenda modify id [titre|lieu|date|status] nouvelle valeur"
+						body => Encode::decode_utf8("Pour modifier un élément, : !agenda modify id [titre|lieu|date|status] nouvelle valeur")
 					);
 					undef $operation;
 				}
@@ -172,7 +173,7 @@ sub said {
 					$self->say(
 						who => $msg->{who},
 						channel => $msg->{channel},
-						body => "Pour supprimer un élément, : !agenda remove id"
+						body => Encode::decode_utf8("Pour supprimer un élément, : !agenda remove id")
 					);
 					undef $operation;
 				}
@@ -182,13 +183,13 @@ sub said {
 					$self->say(
 						who => "matael",
 						channel => $msg->{channel},
-						body => "erreur pour ".$operation." en base : ".$sth->errstr
+						body => Encode::decode_utf8("Erreur pour ".$operation." en base : ".$sth->errstr)
 					);
 				} else {
 					$self->say(
 						who => $msg->{who},
 						channel => $msg->{channel},
-						body => "C'est dans la boite !"
+						body => Encode::decode_utf8("C'est dans la boite !")
 					);
 				}
 			}
@@ -197,7 +198,7 @@ sub said {
 		  $self->say(
 			who => $msg->{who},
 			channel => $msg->{channel},
-			body => "On se connait ?"
+			body => Encode::decode_utf8("On se connait ?")
 		  );
 		  return;
 		}
@@ -208,7 +209,7 @@ sub said {
 		$self->say(
 			who => $master,
 			channel => $msg->{channel},
-			body => "Ok ! $1 est maintenant dans la liste des twolls potentiels :3"
+			body => Encode::decode_utf8("Ok ! $1 est maintenant dans la liste des twolls potentiels :3")
 		);
 	}
 
@@ -218,7 +219,7 @@ sub said {
 		$self->say(
 			who => $master,
 			channel => $msg->{channel},
-			body => "Adieu $1, je l'aimais bien"
+			body => Encode::decode_utf8("Adieu $1, je l'aimais bien")
 		);
 	}
 }
