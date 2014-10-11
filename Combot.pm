@@ -117,7 +117,7 @@ sub said {
 			);
 
 		if (!defined $1) {
-			my $sth = $dbh->prepare('select rowid,* from agenda;');
+			my $sth = $dbh->prepare('select rowid,* from agenda where status=1;');
 			$sth->execute();
 			my $events = $sth->fetchall_arrayref;
 			my @sorted_events = sort datesort @$events;
@@ -167,7 +167,7 @@ sub said {
 				}
 			} elsif ($1 eq "remove") {
 				if ($2 =~ /(\d+)\s*$/) {
-					$sth = $dbh->prepare("delete from agenda where rowid=?");
+					$sth = $dbh->prepare("update agenda set status=0 where rowid=?");
 					$sth->execute($1);
 					$operation = "la suppression";
 				} else {
