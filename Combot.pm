@@ -102,7 +102,7 @@ sub said {
 	}
 
 	# agenda
-	if ( $msg->{body} =~ /^\!agenda\s?(add|remove|modify)?\s?(.+)?$/) {
+	if ( $msg->{body} =~ /^\!agenda\s?(add|remove|modify|all)?\s?(.+)?$/) {
 
 		# Custom sorting function form custom dates
 		sub datesort {
@@ -115,21 +115,20 @@ sub said {
 				body => Encode::decode_utf8("Impossible de se connecter à la db ".$self->{agenda_db})
 			);
 
-		if (!defined $1) {
-			my $sth = $dbh->prepare('select rowid,* from agenda where status=1;');
+		if (!defined $1 or $1 eq "all") {
+			my $query = 'select rowid,* from agenda where status=1 order by rowid asc';
+			$query .= " limit 5" if (!defined $1);
+			my $sth = $dbh->prepare($query.";");
 			$sth->execute();
 			my $events = $sth->fetchall_arrayref;
 			my @sorted_events = sort datesort @$events;
 
-			my $counter = 0;
 			foreach my $e (@sorted_events) {
 				$self->say(
 					who => $msg->{who},
 					channel => $msg->{channel},
 					body => Encode::decode_utf8("#".$e->[0].": ".$e->[1]." ; ".$e->[2]." le ".$e->[4])
 				);
-				$counter++;
-				last if ($counter >= 5);
 			}
 		} elsif ($rdb->get($redis_pref.$msg->{who})){
 			my $operation; # kind of database operation
