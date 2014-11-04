@@ -142,7 +142,7 @@ sub said {
 					$self->say(
 						who => $msg->{who},
 						channel => $msg->{channel},
-						body => Encode::decode_utf8('Pour ajouter un élément, : !agenda add JJ/MM/YYYY "Lieu" "Titre" Description')
+						body => Encode::decode_utf8('Pour ajouter un élément, : !agenda add JJ/MM/YYYY (h)h:mm "Lieu" "Titre" Description')
 					);
 				}
 			} elsif ($1 eq "modify") {
