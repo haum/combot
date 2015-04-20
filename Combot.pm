@@ -42,11 +42,11 @@ sub said {
 				body =>  Encode::decode_utf8("Mise à jour du site en cours...")
 			);
 
-			my $back = `cd /home/haum/website && git co upstream && git pull && source .venv_pelican/bin/activate && make publish && deactivate && echo "OK"`;
+			my $back = `cd /var/www/haum.org/website && git co upstream && git pull && source .venv_pelican/bin/activate && rm -r cache/ && make publish && deactivate && echo "OK"`;
 
-			split( /\n/ , $back);
+			my @out = split( /\n/ , $back);
 			my $message;
-			if (pop @_  eq "OK") {
+			if (pop @out  eq "OK") {
 				$message = "Le site est à jour !";
 			} else {
 				$message = $self->{insultes}[ rand @{$self->{insultes}} ];
