@@ -5,7 +5,7 @@ my $bot = Combot->new(
 	port => 7000,
 	ssl => 1,
 	channels => ['#haum'],
-	nick => 'Com`bot',
+	nick => 'Com`bot_test',
 	redis_db => 3,
 	redis_pref => "combot:",
 	master => "matael",
@@ -13,5 +13,7 @@ my $bot = Combot->new(
 	# GH
 	user => 'haum',
 	repo => 'haum_internal',
+	# spaceapi
+	spaceapikey => ''
 )->run();
 
