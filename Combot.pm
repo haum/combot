@@ -197,6 +197,36 @@ sub said {
 		  return;
 		}
 	}
+	if (($msg->{body} =~ /!spaceapi\s*(state)\s*(.+)$/)) {
+		if ($1 eq 'state') {
+			my $state = 'false';
+			if ($2 eq 'open') {
+				$state = 'true';
+			} elsif ($2 eq 'close') {
+				$state = 'false';
+			} else {
+				$self->say(
+					who => $msg->{who},
+					channel => $msg->{channel},
+					body => Encode::decode_utf8("Usage : !spaceapi state open|close")
+				);
+			}
+			my $response = `curl --data-urlencode sensors='{"state":{"open":$state}}' --data key='$self->{spaceapikey}' https://spaceapi.net/new/space/haum/sensor/set`;
+			if ($response eq '') {
+				$self->say(
+					who => $msg->{who},
+					channel => $msg->{channel},
+					body => Encode::decode_utf8("All went well !! ~o~")
+				);
+			} else {
+				$self->say(
+					who => $msg->{who},
+					channel => $msg->{channel},
+					body => Encode::decode_utf8("Une réponse de chez SpaceAPI : $response")
+				);
+			}
+		}
+	}
     # add an user to the "known nicks" list
 	if (($msg->{who} eq $master) and $msg->{body} =~ /!allow\s*(\w+)/) {
 		$rdb->set($redis_pref.$1, 1);
