@@ -212,7 +212,7 @@ sub said {
 				);
 				return;
 			}
-			my $response = `curl --data-urlencode sensors='{"state":{"open":$state}}' --data key='$self->{spaceapikey}' https://spaceapi.net/new/space/haum/sensor/set`;
+			my $response = `curl -s -S --data-urlencode sensors='{"state":{"open":$state}}' -k --data key='$self->{spaceapikey}' https://spaceapi.net/new/space/haum/sensor/set 2>&1`;
 			if ($response eq '') {
 				$self->say(
 					who => $msg->{who},
