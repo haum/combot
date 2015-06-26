@@ -210,6 +210,7 @@ sub said {
 					channel => $msg->{channel},
 					body => Encode::decode_utf8("Usage : !spaceapi state open|close")
 				);
+				return;
 			}
 			my $response = `curl --data-urlencode sensors='{"state":{"open":$state}}' --data key='$self->{spaceapikey}' https://spaceapi.net/new/space/haum/sensor/set`;
 			if ($response eq '') {
