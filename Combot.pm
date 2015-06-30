@@ -200,10 +200,13 @@ sub said {
 	if (($msg->{body} =~ /!spaceapi\s*(state)\s*(.+)$/)) {
 		if ($1 eq 'state') {
 			my $state = 'false';
+            my $msg = "";
 			if ($2 eq 'open') {
 				$state = 'true';
+                $msg = "INFO : notre espace est tout ouvert, n'hesitez pas a passer si vous le voulez/pouvez ! haum.org";
 			} elsif ($2 eq 'close') {
 				$state = 'false';
+                $msg = "Fin de session ! Jetez un oeil a notre agenda sur haum.org pour connaitre les prochaines ou surveillez notre fil twitter.";
 			} else {
 				$self->say(
 					who => $msg->{who},
@@ -219,6 +222,11 @@ sub said {
 					channel => $msg->{channel},
 					body => Encode::decode_utf8("All went well !! ~o~")
 				);
+				$self->say(
+						who => $msg->{who},
+						channel => $msg->{channel},
+						body => Encode::decode_utf8("@tweet $msg")
+                );
 			} else {
 				$self->say(
 					who => $msg->{who},
