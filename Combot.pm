@@ -47,6 +47,7 @@ sub said {
 			my @out = split( /\n/ , $back);
 			my $message;
 			if (pop @out  eq "OK") {
+				`rsync -avc --delete /var/www/haum.org/website/output/ /var/www/haum.org/build`;
 				$message = "Le site est à jour !";
 			} else {
 				$message = $self->{insultes}[ rand @{$self->{insultes}} ];
