@@ -197,7 +197,7 @@ sub said {
 		  return;
 		}
 	}
-	if (($msg->{body} =~ /!spaceapi\s*(state)\s*(.+)$/)) {
+	if (($msg->{body} =~ /^!spaceapi\s*(state)\s*(.+)$/)) {
 		if ($1 eq 'state') {
 			my $state = 'false';
             my $twitter_msg = "";
@@ -237,7 +237,7 @@ sub said {
 		}
 	}
     # add an user to the "known nicks" list
-	if (($msg->{who} eq $master) and $msg->{body} =~ /!allow\s*(\w+)/) {
+	if (($msg->{who} eq $master) and $msg->{body} =~ /^!allow\s*(\w+)/) {
 		$rdb->set($redis_pref.$1, 1);
 		$self->say(
 			who => $master,
@@ -247,7 +247,7 @@ sub said {
 	}
 
 	# remove an user from the "known nicks" list
-	if (($msg->{who} eq $master) and $msg->{body} =~ /!disallow\s*(\w+)/) {
+	if (($msg->{who} eq $master) and $msg->{body} =~ /^!disallow\s*(\w+)/) {
 		$rdb->del($redis_pref.$1) if $rdb->get($redis_pref.$1);
 		$self->say(
 			who => $master,
