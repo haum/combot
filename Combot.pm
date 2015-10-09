@@ -12,6 +12,8 @@ use Bot::BasicBot;
 use base qw( Bot::BasicBot );
 use Unicode::MapUTF8;
 
+use JSON;
+
 sub init {
 	my ($self) = @_;
 
@@ -201,18 +203,36 @@ sub said {
 	if (($msg->{body} =~ /^!spaceapi\s*(state)\s*(.+)$/)) {
 		if ($1 eq 'state') {
 			my $state = 'false';
-            my $twitter_msg = "";
+            		my $twitter_msg = "";
 			if ($2 eq 'open') {
 				$state = 'true';
-                $twitter_msg = "INFO : notre espace est tout ouvert, n'hesitez pas a passer si vous le voulez/pouvez ! haum.org";
+                		$twitter_msg = "INFO : notre espace est tout ouvert, n'hesitez pas a passer si vous le voulez/pouvez ! haum.org";
 			} elsif ($2 eq 'close') {
 				$state = 'false';
-                $twitter_msg = "Fin de session ! Jetez un oeil a notre agenda sur haum.org pour connaitre les prochaines ou surveillez notre fil twitter.";
+                		$twitter_msg = "Fin de session ! Jetez un oeil a notre agenda sur haum.org pour connaitre les prochaines ou surveillez notre fil twitter.";
+			} elsif ($2 eq 'toggle') {
+                               $json = JSON->new->allow_nonref;
+                               my $json_object = decode_json `curl -s -S -k https://spaceapi.net/new/space/haum/status/json`;
+                               my $got_state = $json_object->{'state'}{'open'};
+                               if ($got_state eq 'true') {
+                                       $state = 'false';
+                                       $twitter_msg = "Fin de session ! Jetez un oeil a notre agenda sur haum.org pour connaitre les prochaines ou surveillez notre fil twitter.";
+                               } elsif ($got_state eq 'false') {
+                                       $state = 'true';
+                                       $twitter_msg = "INFO : notre espace est tout ouvert, n'hesitez pas a passer si vous le voulez/pouvez ! haum.org";
+                               } else {
+                                       $self->say(
+                                               who => $msg->{who},
+                                               channel => $msg->{channel},
+                                               body => Encode::decode_utf8("L'api ne donne pas le status correctement.")
+                                       );
+                                return;
+                               }
 			} else {
 				$self->say(
 					who => $msg->{who},
 					channel => $msg->{channel},
-					body => Encode::decode_utf8("Usage : !spaceapi state open|close")
+					body => Encode::decode_utf8("Usage : !spaceapi state open|close|toggle")
 				);
 				return;
 			}
