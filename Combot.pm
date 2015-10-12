@@ -12,6 +12,8 @@ use Bot::BasicBot;
 use base qw( Bot::BasicBot );
 use Unicode::MapUTF8;
 
+use JSON;
+
 sub init {
 	my ($self) = @_;
 
@@ -201,21 +203,37 @@ sub said {
 	if (($msg->{body} =~ /^!spaceapi\s*(state)\s*(.+)$/)) {
 		if ($1 eq 'state') {
 			my $state = 'false';
-            my $twitter_msg = "";
-			if ($2 eq 'open') {
+			my $twitter_msg = "";
+
+			if ($2 eq 'open') { # Opening
 				$state = 'true';
-                $twitter_msg = "INFO : notre espace est tout ouvert, n'hesitez pas a passer si vous le voulez/pouvez ! haum.org";
-			} elsif ($2 eq 'close') {
+			} elsif ($2 eq 'close') { # Closing
 				$state = 'false';
-                $twitter_msg = "Fin de session ! Jetez un oeil a notre agenda sur haum.org pour connaitre les prochaines ou surveillez notre fil twitter.";
+			} elsif ($2 eq 'toggle') { # Toggle w/ check of SpaceAPI
+				my $json = JSON->new->allow_nonref;
+				my $json_object = decode_json `curl -s -S -k https://spaceapi.net/new/space/haum/status/json`;
+				my $got_state = $json_object->{'state'}{'open'};
+				if ($got_state) {
+					$state = 'false';
+				} else {
+					$state = 'true';
+				}
 			} else {
 				$self->say(
 					who => $msg->{who},
 					channel => $msg->{channel},
-					body => Encode::decode_utf8("Usage : !spaceapi state open|close")
+					body => Encode::decode_utf8("Usage : !spaceapi state open|close|toggle")
 				);
 				return;
 			}
+
+			# forge the message
+			if ($state eq 'false') {
+				$twitter_msg = "Fin de session ! Jetez un oeil a notre agenda sur haum.org pour connaitre les prochaines ou surveillez notre fil twitter.";
+			} else {
+				$twitter_msg = "INFO : notre espace est tout ouvert, n'hesitez pas a passer si vous le voulez/pouvez ! haum.org";
+			}
+
 			my $response = `curl -s -S --data-urlencode sensors='{"state":{"open":$state}}' -k --data key='$self->{spaceapikey}' https://spaceapi.net/new/space/haum/sensor/set 2>&1`;
 			if ($response eq '') {
 				$self->say(
