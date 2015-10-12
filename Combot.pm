@@ -210,20 +210,13 @@ sub said {
 			} elsif ($2 eq 'close') { # Closing
 				$state = 'false';
 			} elsif ($2 eq 'toggle') { # Toggle w/ check of SpaceAPI
-				$json = JSON->new->allow_nonref;
+				my $json = JSON->new->allow_nonref;
 				my $json_object = decode_json `curl -s -S -k https://spaceapi.net/new/space/haum/status/json`;
 				my $got_state = $json_object->{'state'}{'open'};
-				if ($got_state eq 'true') {
+				if ($got_state) {
 					$state = 'false';
-				} elsif ($got_state eq 'false') {
-					$state = 'true';
 				} else {
-					$self->say(
-						who => $msg->{who},
-						channel => $msg->{channel},
-						body => Encode::decode_utf8("L'api ne donne pas le status correctement.")
-					);
-					return;
+					$state = 'true';
 				}
 			} else {
 				$self->say(
