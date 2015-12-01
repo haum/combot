@@ -5,7 +5,6 @@ use warnings;
 
 use Net::GitHub::V3;
 use DBI;
-use Redis; 			# for authorizations
 
 use Bot::BasicBot;
 
@@ -27,17 +26,10 @@ sub init {
 
 sub said {
 	my ($self, $msg) = @_;
-
-	# redis link
-	my $redis_db = $self->{redis_db};
-	my $redis_pref = $self->{redis_pref};
 	my $master = $self->{master};
 
-	my $rdb = Redis->new();
-	$rdb->select($redis_db);
-
 	if ($msg->{body} =~ /^!updatesite$/) {
-		if ($rdb->get($redis_pref.$msg->{who})) {
+		if ($self->{IRCOBJ}->has_channel_voice($msg->{channel}, $msg->{who})) {
 			$self->say(
 				who => $msg->{who},
 				channel => $msg->{channel},
@@ -133,7 +125,7 @@ sub said {
 					body => Encode::decode_utf8("#".$e->[0].": ".$e->[1]." ; ".$e->[2]." le ".$e->[4])
 				);
 			}
-		} elsif ($rdb->get($redis_pref.$msg->{who})){
+		} elsif ($self->{IRCOBJ}->has_channel_voice($msg->{channel}, $msg->{who})){
 			my $operation; # kind of database operation
 			my $sth;
 			if ($1 eq "add") {
@@ -209,14 +201,23 @@ sub said {
 				$state = 'true';
 			} elsif ($2 eq 'close') { # Closing
 				$state = 'false';
-			} elsif ($2 eq 'toggle') { # Toggle w/ check of SpaceAPI
+			} elsif ($2 eq 'toggle') {
 				my $json = JSON->new->allow_nonref;
 				my $json_object = decode_json `curl -s -S -k https://spaceapi.net/new/space/haum/status/json`;
 				my $got_state = $json_object->{'state'}{'open'};
-				if ($got_state) {
+				if ($got_state eq 'true') {
 					$state = 'false';
-				} else {
+					$twitter_msg = "Fin de session ! Jetez un oeil a notre agenda sur haum.org pour connaitre les prochaines ou surveillez notre fil twitter.";
+				} elsif ($got_state eq 'false') {
 					$state = 'true';
+					$twitter_msg = "INFO : notre espace est tout ouvert, n'hesitez pas a passer si vous le voulez/pouvez ! haum.org";
+				} else {
+					$self->say(
+						who => $msg->{who},
+						channel => $msg->{channel},
+						body => Encode::decode_utf8("L'api ne donne pas le status correctement.")
+					);
+					return;
 				}
 			} else {
 				$self->say(
@@ -255,26 +256,6 @@ sub said {
 			}
 		}
 	}
-    # add an user to the "known nicks" list
-	if (($msg->{who} eq $master) and $msg->{body} =~ /^!allow\s*(\w+)/) {
-		$rdb->set($redis_pref.$1, 1);
-		$self->say(
-			who => $master,
-			channel => $msg->{channel},
-			body => Encode::decode_utf8("Ok ! $1 est maintenant dans la liste des twolls potentiels :3")
-		);
-	}
-
-	# remove an user from the "known nicks" list
-	if (($msg->{who} eq $master) and $msg->{body} =~ /^!disallow\s*(\w+)/) {
-		$rdb->del($redis_pref.$1) if $rdb->get($redis_pref.$1);
-		$self->say(
-			who => $master,
-			channel => $msg->{channel},
-			body => Encode::decode_utf8("Adieu $1, je l'aimais bien")
-		);
-	}
 }
 
 1;
-
