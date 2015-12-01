@@ -205,12 +205,10 @@ sub said {
 				my $json = JSON->new->allow_nonref;
 				my $json_object = decode_json `curl -s -S -k https://spaceapi.net/new/space/haum/status/json`;
 				my $got_state = $json_object->{'state'}{'open'};
-				if ($got_state eq 'true') {
+				if ($got_state) {
 					$state = 'false';
-					$twitter_msg = "Fin de session ! Jetez un oeil a notre agenda sur haum.org pour connaitre les prochaines ou surveillez notre fil twitter.";
-				} elsif ($got_state eq 'false') {
+				} elsif (!$got_state) {
 					$state = 'true';
-					$twitter_msg = "INFO : notre espace est tout ouvert, n'hesitez pas a passer si vous le voulez/pouvez ! haum.org";
 				} else {
 					$self->say(
 						who => $msg->{who},
