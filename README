@@ -1,7 +1,51 @@
 Combot
 ======
 
-
 Combot is a general purpose bot for the HAUM's IRC channel on freenode.
-
 He is intented to be a servant without soul or feelings but with a lot of (useful) features.
+
+Requirements
+------------
+
+- Perl ;)
+- `Net::GitHub::V3`
+- `Bot::BasicBot`
+- `JSON`
+- `DBI`
+- `Unicode::MapUTF8`
+
+Commands
+--------
+
+!agenda [add|remove|modify|all]
+To manage all calendar events, sub-commands are :
+
+- !agenda add : to add an event to the calendar
+- !agenda remove : to remove an event from the calendar (not really deleted, just flagged as!)
+- !agenda modify : to edit an event from the calendar
+- !agenda all : to view all calendar events from now
+
+!updatesite
+Update the HAUM website by "git pull" and recompile it.
+
+!todolist
+Get all the issue on HAUM's github.
+
+!spaceapi state [open|close|toggle]
+Set the hackerspace's state.
+
+Licence
+-------
+               DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+                       Version 2, December 2004
+
+    Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
+
+    Everyone is permitted to copy and distribute verbatim or modified
+    copies of this license document, and changing it is allowed as long
+    as the name is changed.
+
+               DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+      TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+     0. You just DO WHAT THE FUCK YOU WANT TO.
