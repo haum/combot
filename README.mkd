@@ -18,6 +18,7 @@ Commands
 --------
 
 !agenda [add|remove|modify|all]
+
 To manage all calendar events, sub-commands are :
 
 - !agenda add : to add an event to the calendar
@@ -26,12 +27,15 @@ To manage all calendar events, sub-commands are :
 - !agenda all : to view all calendar events from now
 
 !updatesite
+
 Update the HAUM website by "git pull" and recompile it.
 
 !todolist
+
 Get all the issue on HAUM's github.
 
 !spaceapi state [open|close|toggle]
+
 Set the hackerspace's state.
 
 Licence
