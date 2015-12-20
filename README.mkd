@@ -7,12 +7,22 @@ He is intented to be a servant without soul or feelings but with a lot of (usefu
 Requirements
 ------------
 
+- cpan
 - Perl ;)
 - `Net::GitHub::V3`
 - `Bot::BasicBot`
 - `JSON`
 - `DBI`
 - `Unicode::MapUTF8`
+- `POE::Component::SSLify`
+- `DBD::SQLite`
+
+Database Creation
+-----------------
+
+- `sqlite agenda.sqlite`
+- `sqlite> create table agenda  (titre TEXT, lieu TEXT, description TEXT, date TEXT, status INT);`
+
 
 Commands
 --------
