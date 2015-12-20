@@ -22,6 +22,14 @@ sub init {
 		"Quoi ? T'as pété le site ? ... vache... on file des accès à n'importe qui de nos jours.",
 		"Bravo. T'as tout flingué. Continue comme ça, et tu vas te faire claquer par un robot."
 	];
+	
+	$self->{help} = [
+		"!help affiche l'aide",
+		"!agenda {add|remove|modify|all}commandes relatives à l'agenda",
+		"!updatesite met à jour le site du Haum",
+		"!todolist affiche la todolist du Haum",
+		"!spaceapi state {open|close|toggle}"
+	];
 }
 
 sub said {
@@ -95,6 +103,16 @@ sub said {
 			})
 		}
 	}
+	# help
+	if ( $msg->{body} =~ /^\!help?\s?(.+)?$/) {
+		foreach (@{$self->{help}}) {		
+			$self->say(
+				who => $msg->{who},
+				channel => $msg->{channel},
+				body => Encode::decode_utf8($_)
+			);
+		}
+	}
 
 	# agenda
 	if ( $msg->{body} =~ /^\!agenda\s?(add|remove|modify|all)?\s?(.+)?$/) {
@@ -122,7 +140,7 @@ sub said {
 				$self->say(
 					who => $msg->{who},
 					channel => $msg->{channel},
-					body => Encode::decode_utf8("#".$e->[0].": ".$e->[1]." ; ".$e->[2]." le ".$e->[4])
+					body => Encode::decode_utf8("#".$e->[0].": ".$e->[1]." ; ".$e->[2]." le ".$e->[4]. " ".$e->[5])
 				);
 			}
 		} elsif ($self->{IRCOBJ}->has_channel_voice($msg->{channel}, $msg->{who})){
