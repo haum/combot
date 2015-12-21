@@ -33,9 +33,11 @@ sub init {
 
 	$self->{agenda_messages} = [
 		"Si pour 2016 t'as des projets, viens nous voir et nous en parler !",
-		"Si tu aimes bricoller, vient t'amuser avec nous !",
+		"Si tu aimes bricoler, viens t'amuser avec nous !",
 		"Tant que tu n'as pas essayé tu peux encore te passer de nous... VIENS !",
-		"Curieux de nature ? tu trouveras ta place dans notre secte ;)"
+		"Curieux de nature ? Tu trouveras ta place dans notre secte ;)",
+		"Si hacker est pour toi plus qu'un truc qu'on entend aux infos, passe nous voir !",
+		"Envie de plancher avec nous à d'autres expériences insolites ?"
 	];
 }
 
