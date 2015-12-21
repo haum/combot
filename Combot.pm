@@ -22,7 +22,7 @@ sub init {
 		"Quoi ? T'as pété le site ? ... vache... on file des accès à n'importe qui de nos jours.",
 		"Bravo. T'as tout flingué. Continue comme ça, et tu vas te faire claquer par un robot."
 	];
-	
+
 	$self->{help} = [
 		"!help affiche l'aide",
 		"!agenda {add_seance|add|remove|modify|all}commandes relatives à l'agenda",
@@ -112,7 +112,7 @@ sub said {
 	}
 	# help
 	if ( $msg->{body} =~ /^\!help?\s?(.+)?$/) {
-		foreach (@{$self->{help}}) {		
+		foreach (@{$self->{help}}) {
 			$self->say(
 				who => $msg->{who},
 				channel => $msg->{channel},
@@ -155,7 +155,7 @@ sub said {
 			my $sth;
 			if ($1 eq "add_seance") {
 				if (defined $2 and $2 =~ /(\d{1,2}\/\d{2}\/\d{4}\s\d{1,2}:\d{2})$/) {
-					my $message = $self->{agenda_messages}[ rand @{$self->{agenda_messages}} ];				
+					my $message = $self->{agenda_messages}[ rand @{$self->{agenda_messages}} ];
 					$sth = $dbh->prepare("insert into agenda (titre,lieu,description,date,status) values (?,?,?,?,1)");
 					$sth->execute("Session bidouille", "Local du Haum", $message, $1);
 					$operation = "l'insertion";
@@ -235,7 +235,7 @@ sub said {
 			if ($1 eq 'state') {
 				my $state = 'false';
 				my $twitter_msg = "";
-	
+
 				if ($2 eq 'open') { # Opening
 					$state = 'true';
 				} elsif ($2 eq 'close') { # Closing
@@ -264,14 +264,14 @@ sub said {
 					);
 					return;
 				}
-	
+
 				# forge the message
 				if ($state eq 'false') {
 					$twitter_msg = "Fin de session ! Jetez un oeil a notre agenda sur haum.org pour connaitre les prochaines ou surveillez notre fil twitter.";
 				} else {
 					$twitter_msg = "INFO : notre espace est tout ouvert, n'hesitez pas a passer si vous le voulez/pouvez ! haum.org";
 				}
-	
+
 				my $response = `curl -s -S --data-urlencode sensors='{"state":{"open":$state}}' -k --data key='$self->{spaceapikey}' https://spaceapi.net/new/space/haum/sensor/set 2>&1`;
 				if ($response eq '') {
 					$self->say(
