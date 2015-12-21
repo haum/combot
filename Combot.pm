@@ -25,10 +25,17 @@ sub init {
 	
 	$self->{help} = [
 		"!help affiche l'aide",
-		"!agenda {add|remove|modify|all}commandes relatives à l'agenda",
+		"!agenda {add_seance|add|remove|modify|all}commandes relatives à l'agenda",
 		"!updatesite met à jour le site du Haum",
 		"!todolist affiche la todolist du Haum",
 		"!spaceapi state {open|close|toggle}"
+	];
+
+	$self->{agenda_messages} = [
+		"Si pour 2016 t'as des projets, viens nous voir et nous en parler !",
+		"Si tu aimes bricoller, vient t'amuser avec nous !",
+		"Tant que tu n'as pas essayé tu peux encore te passer de nous... VIENS !",
+		"Curieux de nature ? tu trouveras ta place dans notre secte ;)"
 	];
 }
 
@@ -115,7 +122,7 @@ sub said {
 	}
 
 	# agenda
-	if ( $msg->{body} =~ /^\!agenda\s?(add|remove|modify|all)?\s?(.+)?$/) {
+	if ( $msg->{body} =~ /^\!agenda\s?(add_seance|add|remove|modify|all)?\s?(.+)?$/) {
 
 		# Custom sorting function form custom dates
 		sub datesort {
@@ -146,7 +153,20 @@ sub said {
 		} elsif ($self->{IRCOBJ}->has_channel_voice($msg->{channel}, $msg->{who})){
 			my $operation; # kind of database operation
 			my $sth;
-			if ($1 eq "add") {
+			if ($1 eq "add_seance") {
+				if (defined $2 and $2 =~ /(\d{1,2}\/\d{2}\/\d{4}\s\d{1,2}:\d{2})$/) {
+					my $message = $self->{agenda_messages}[ rand @{$self->{agenda_messages}} ];				
+					$sth = $dbh->prepare("insert into agenda (titre,lieu,description,date,status) values (?,?,?,?,1)");
+					$sth->execute("Session bidouille", "Local du Haum", $message, $1);
+					$operation = "l'insertion";
+				} else {
+					$self->say(
+						who => $msg->{who},
+						channel => $msg->{channel},
+						body => Encode::decode_utf8('Pour ajouter un élément, : !agenda add_seance JJ/MM/YYYY (h)h:mm')
+					);
+				}
+			}elsif ($1 eq "add") {
 				if (defined $2 and $2 =~ /(\d{1,2}\/\d{2}\/\d{4}\s\d{1,2}:\d{2})\s"([^"]+)"\s"([^"]+)"(.+)$/) {
 					$sth = $dbh->prepare("insert into agenda (titre,lieu,description,date,status) values (?,?,?,?,1)");
 					$sth->execute($3, $2, $4, $1);
