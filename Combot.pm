@@ -113,7 +113,7 @@ sub said {
 		}
 	}
 	# help
-	if ( $msg->{body} =~ /^\!help?\s?(.+)?$/) {
+	if ( $msg->{body} =~ /^\!help/) {
 		foreach (@{$self->{help}}) {
 			$self->say(
 				who => $msg->{who},
