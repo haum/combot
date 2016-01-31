@@ -269,9 +269,9 @@ sub said {
 
 				# forge the message
 				if ($state eq 'false') {
-					$twitter_msg = "Fin de session ! Jetez un oeil a notre agenda sur haum.org pour connaitre les prochaines ou surveillez notre fil twitter.";
+					$twitter_msg = "Fin de session ! Jetez un œil à notre agenda sur haum.org pour connaître les prochaines ou surveillez notre fil twitter.";
 				} else {
-					$twitter_msg = "INFO : notre espace est tout ouvert, n'hesitez pas a passer si vous le voulez/pouvez ! haum.org";
+					$twitter_msg = "INFO : notre espace est tout ouvert, n'hésitez pas à passer si vous le voulez/pouvez ! haum.org";
 				}
 
 				my $response = `curl -s -S --data-urlencode sensors='{"state":{"open":$state}}' -k --data key='$self->{spaceapikey}' https://spaceapi.net/new/space/haum/sensor/set 2>&1`;
