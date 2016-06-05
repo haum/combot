@@ -52,12 +52,12 @@ sub said {
 				body =>  Encode::decode_utf8("Mise à jour du site en cours...")
 			);
 
-			my $back = `cd /var/www/haum.org/website-content && git pull && cd /var/www/haum.org/website && source .venv_pelican/bin/activate && rm -r cache/ && make publish && deactivate && echo "OK"`;
+			my $back = `bash -c \"cd /home/oneshot/website-content && git pull && cd /home/oneshot/website && source .venv_pelican/bin/activate && rm -r cache/ && make publish && deactivate && echo "OK"\"`;
 
 			my @out = split( /\n/ , $back);
 			my $message;
 			if (pop @out  eq "OK") {
-				`rsync -avc --delete /var/www/haum.org/website/output/ /var/www/haum.org/build`;
+				`rsync -avc --delete /home/oneshot/website/output/ /var/www/haum.org/build`;
 				$message = "Le site est à jour !";
 			} else {
 				$message = $self->{insultes}[ rand @{$self->{insultes}} ];
@@ -130,7 +130,7 @@ sub said {
 			join('', (split '/', (split ' ',$a->[4])[0])[2,1,0]) cmp join('', (split '/', (split ' ',$b->[4])[0])[2,1,0]);
 		}
 
-		my $dbh = DBI->connect("dbi:SQLite:dbname=".$self->{agenda_db}) or 	$self->say(
+		my $dbh = DBI->connect("dbi:SQLite:dbname=".$self->{agenda_db}) or $self->say(
 				who => $msg->{who},
 				channel => $msg->{channel},
 				body => Encode::decode_utf8("Impossible de se connecter à la db ".$self->{agenda_db})
@@ -231,7 +231,7 @@ sub said {
 		  return;
 		}
 	}
-	if (($msg->{body} =~ /^!spaceapi\s*(state)\s*(.+)$/)) {
+	if (($msg->{body} =~ /^!spaceapi\s*(state)\s*(\S+)\s*(.*)$/)) {
 		if ($self->{IRCOBJ}->has_channel_voice($msg->{channel}, $msg->{who})) {
 			if ($1 eq 'state') {
 				my $state = 'false';
@@ -280,11 +280,13 @@ sub said {
 						channel => $msg->{channel},
 						body => Encode::decode_utf8("All went well !! ~o~")
 					);
-					$self->say(
-							who => $msg->{who},
-							channel => $msg->{channel},
-							body => Encode::decode_utf8("\@tweet $twitter_msg")
-	                );
+					if ($3 ne 'silent') {
+						$self->say(
+								who => $msg->{who},
+								channel => $msg->{channel},
+								body => Encode::decode_utf8("\@tweet $twitter_msg")
+				                );
+					}
 				} else {
 					$self->say(
 						who => $msg->{who},
